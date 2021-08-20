@@ -76,5 +76,5 @@ class ProjectTeamMember(models.Model):
 class MemberTask(models.Model):
     TeamCode = models.ForeignKey(Team, null=True, related_name='task_TeamCode', on_delete=models.CASCADE)
     ProjectCode = models.ForeignKey(Project, null=True, related_name='task_ProjCode', on_delete=models.CASCADE)
-    TaskName = models.ForeignKey(Task, on_delete=models.CASCADE)
+    TaskName = models.ForeignKey(Task,null=True, unique=True, on_delete=models.CASCADE)
     EmployeeID = models.ForeignKey(Person, null=True, related_name='task_EmployeeID', on_delete=models.CASCADE)

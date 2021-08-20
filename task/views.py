@@ -350,32 +350,25 @@ def fifthtask(request):
 
         conn = connections['default']
         cursor1 = conn.cursor()
-        employee = cursor1.execute('SELECT ProjectCode_id FROM task_projectteammember WHERE EmployeeID_id=%s', [EmployeeID])
-        # cursor1.fetchall(employee)
-        print(employee)
+        cursor2 = conn.cursor()
 
-        # employee = ProjectTeamMember.objects.raw('SELECT ProjectCode_id FROM task_projectteammember WHERE EmployeeID_id=%s', [EmployeeID])
-        # print(employee)
+        cursor1.execute('SELECT ProjectCode_id FROM task_projectteammember WHERE EmployeeID_id=%s', [EmployeeID])
+        employee = cursor1.fetchone()
 
 
+        if employee[0].__eq__(0):
 
+            cursor2.execute('UPDATE task_teammember SET TeamCode_id=%s WHERE EmployeeID_id=%s', [TeamCode, EmployeeID])
+            cursor2.execute('UPDATE task_projectteammember SET TeamCode_id=%s WHERE EmployeeID_id=%s', [TeamCode, EmployeeID])
+            cursor2.execute('SELECT ProjectCode_id FROM task_projectteammember WHERE TeamCode_id=%s', [TeamCode])
+            projectcode=cursor2.fetchone()
+            cursor2.execute('UPDATE task_projectteammember SET ProjectCode_id=%s WHERE EmployeeID_id=%s', [projectcode, EmployeeID])
+            return Response(
+                {"Success": True, "Message": "Employee team has changed", "Payload": [TeamCode, EmployeeID]})
+        else:
+            return Response({"Success": False, "Message": "Employee has assigned a project", "Payload": []})
 
-
-
-
-
-
-
-        # if employee.__eq__(0):
-        #     changeTeam = TeamMember.objects.raw('UPDATE TeamMember SET TeamCode_id=%s WHERE EmployeeID_id=%s',[TeamCode, EmployeeID])
-        #     return Response(
-        #         {"Success": True, "Message": "Employee team has changed", "Payload": [TeamCode, EmployeeID]})
-        # else:
-        #     return Response({"Success": False, "Message": "Employee has assigned a project", "Payload": []})
-        #
-        # # return Response(
-        # #     {"Success": True, "Message": "Success", "Payload": [employee]})
-        # cursor.close()
+        # cursor1.close()
     except Exception as e:
         return Response(
             {"Success": False, "Message": e, "Payload": []})
@@ -394,7 +387,20 @@ def sixthtask(request):
         # cursortmembertask = conn.cursor()
 
         EmployeeID = data['EmployeeID']
+        TaskName = data['TaskName']
 
+        cursor1.execute('SELECT ProjectCode_id FROM task_membertask WHERE EmployeeID_id=%s', [EmployeeID])
+        membertask = cursor1.fetchone()
+        print("MemberTask", membertask)
+        cursor1.execute('SELECT ProjectCode_id FROM task_task WHERE TaskName=%s', [TaskName])
+        task = cursor1.fetchone()
+        print("task", task)
+
+        if(membertask.__eq__(task)):
+            cursor1.execute('UPDATE task_membertask SET TaskName_id=%s WHERE EmployeeID_id=%s', [TaskName, EmployeeID])
+            return Response({"Success": True, "Message": "Task Changed!", "Payload": []})
+        else:
+            return Response({"Success": False, "Message": "No Changing allowed!", "Payload": []})
         cursor1.close()
         # cursortmembertask.close()
     except Exception as e:

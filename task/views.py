@@ -205,8 +205,7 @@ def firsttask(request):
         cursor2.close()
         cursor3.close()
         return JsonResponse(
-            {"Success": True, "Message": "Data  added Successful",
-             "Payload": [PersonID, EmployeeBillingRate, EmployeeWorkPhone, EmployeeFunction]})
+            {"Success": True, "Message": "Employee added!!", "Payload": []})
 
     except Exception as e:
         return Response(
@@ -229,12 +228,13 @@ def secondtask(request):
         TeamCode = data['TeamCode']
         EmployeeID = data['EmployeeID']
 
-        teamname = Team.TeamName
+        teamname=Team.TeamName
+        print(teamname)
         team = "INSERT INTO task_team(TeamName, TeamLeader_id) VALUES (%s,%s)"
+        teamval = (TeamName, TeamLeader)
         if (teamname.__eq__(TeamName)):
             pass
         else:
-            teamval = (TeamName, TeamLeader)
             cursorteam.execute(team, teamval)
 
         teammember = "INSERT INTO task_TeamMember( EmployeeID_id,TeamCode_id) VALUES (%s,%s)"
@@ -245,8 +245,7 @@ def secondtask(request):
         cursorteammember.close()
 
         return Response(
-            {"Success": True, "Message": "Data  added Successful",
-             "Payload": [TeamName, TeamLeader, TeamCode, EmployeeID]})
+            {"Success": True, "Message": "Employee added in the team!!", "Payload": []})
 
 
     except Exception as e:
@@ -329,8 +328,7 @@ def fourthtask(request):
         cursorproject.close()
         # cursortmembertask.close()
         return Response(
-            {"Success": True, "Message": "Data  added Successful",
-             "Payload": []})
+            {"Success": True, "Message": "Data  added Successful", "Payload": []})
 
     except Exception as e:
         print(e)
@@ -362,7 +360,9 @@ def fifthtask(request):
             cursor2.execute('UPDATE task_projectteammember SET TeamCode_id=%s WHERE EmployeeID_id=%s', [TeamCode, EmployeeID])
             cursor2.execute('SELECT ProjectCode_id FROM task_projectteammember WHERE TeamCode_id=%s', [TeamCode])
             projectcode=cursor2.fetchone()
-            cursor2.execute('UPDATE task_projectteammember SET ProjectCode_id=%s WHERE EmployeeID_id=%s', [projectcode, EmployeeID])
+            #cursor2.execute('UPDATE task_projectteammember SET ProjectCode_id=%s WHERE EmployeeID_id=%s', [projectcode, EmployeeID])
+            cursor2.execute('UPDATE task_membertask SET ProjectCode_id=%s WHERE EmployeeID_id=%s', [projectcode, EmployeeID])
+            cursor2.execute('UPDATE task_membertask SET TeamCode_id=%s WHERE EmployeeID_id=%s', [TeamCode, EmployeeID])
             return Response(
                 {"Success": True, "Message": "Employee team has changed", "Payload": [TeamCode, EmployeeID]})
         else:
@@ -391,18 +391,26 @@ def sixthtask(request):
 
         cursor1.execute('SELECT ProjectCode_id FROM task_membertask WHERE EmployeeID_id=%s', [EmployeeID])
         membertask = cursor1.fetchone()
-        print("MemberTask", membertask)
+        #print("MemberTask", membertask)
         cursor1.execute('SELECT ProjectCode_id FROM task_task WHERE TaskName=%s', [TaskName])
         task = cursor1.fetchone()
-        print("task", task)
+        #print("task", task)
 
         if(membertask.__eq__(task)):
+            cursor1.execute('SELECT TaskName_id FROM task_membertask WHERE EmployeeID_id=%s', [EmployeeID])
+            ttask=cursor1.fetchone()
+
+            cursor1.execute('SELECT EmployeeID_id FROM task_membertask WHERE TaskName_id=%s', [TaskName])
+            empid = cursor1.fetchone()
+
+            cursor1.execute('UPDATE task_membertask SET TaskName_id=%s WHERE TaskName_id=%s', [None, TaskName])
             cursor1.execute('UPDATE task_membertask SET TaskName_id=%s WHERE EmployeeID_id=%s', [TaskName, EmployeeID])
+            cursor1.execute('UPDATE task_membertask SET TaskName_id=%s WHERE EmployeeID_id=%s', [ttask, empid])
             return Response({"Success": True, "Message": "Task Changed!", "Payload": []})
         else:
-            return Response({"Success": False, "Message": "No Changing allowed!", "Payload": []})
+            return Response({"Success": False, "Message": "Different Projects,No Changing allowed!", "Payload": []})
         cursor1.close()
         # cursortmembertask.close()
     except Exception as e:
         return Response(
-            {"Success": False, "Message": e, "Payload": []})
+            {"Success": False, "Message": e, "Payload": [TaskName]})

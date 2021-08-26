@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'emp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'task1',
+        'NAME': 'final',
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'USER': 'root',

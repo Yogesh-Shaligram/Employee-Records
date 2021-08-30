@@ -16,13 +16,13 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path
-from task .views import *
+from task.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #API-1
+    # API-1
     url('api/firsttask', firsttask),
-    #API-2
+    # API-2
     url('api/secondtask', secondtask),
     # API-3
     url('api/thirdtask', thirdtask),

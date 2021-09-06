@@ -288,7 +288,7 @@ def thirdtask(request):
         task = "INSERT INTO task_Task(TaskName, TaskDescription, TaskCost, TaskDueDate, TaskCreateDate, ProjectCode_id) VALUES(%s,%s,%s,%s,%s,%s)"
         taskval = (TaskName, TaskDescription, TaskCost, TaskDueDate, TaskCreateDate, ProjectCode)
         cursortask.execute(task, taskval)
-
+ 
         cursorproject.close()
         cursortask.close()
         return Response(
